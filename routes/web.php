@@ -1,17 +1,31 @@
 <?php
 
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\GameController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Game routes
+Route::post('/game', [GameController::class, 'create'])->name('game.create');
+Route::get('/game/{code}', [GameController::class, 'show'])->name('game.show');
+Route::post('/game/{code}/join', [GameController::class, 'join'])->name('game.join');
+Route::post('/game/{code}/move', [GameController::class, 'move'])->name('game.move');
+Route::post('/game/{code}/play-again', [GameController::class, 'playAgain'])->name('game.playAgain');
+Route::post('/game/{code}/forfeit', [GameController::class, 'forfeit'])->name('game.forfeit');
+Route::post('/game/{code}/chat', [ChatController::class, 'store'])->name('game.chat');
+
+Route::middleware([
+    'auth',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+});
 
 require __DIR__.'/settings.php';

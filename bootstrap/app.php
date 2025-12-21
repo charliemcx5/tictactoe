@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        if (app()->runningInConsole()) {
+            $middleware->validateCsrfTokens(except: ['*']);
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
