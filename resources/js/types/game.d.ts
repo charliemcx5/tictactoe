@@ -1,4 +1,4 @@
-export type TimerSetting = 'off' | '3' | '10' | '30';
+export type TimerSetting = 'off' | '5' | '10' | '30';
 export type GameMode = 'bot' | 'online';
 export type PlayerSymbol = 'X' | 'O';
 export type GameStatus = 'waiting' | 'playing' | 'finished';
@@ -19,14 +19,16 @@ export interface Game {
     winner: Winner;
     turn_started_at: string | null;
     winning_cells?: number[];
+    rematch_requested_by?: PlayerSymbol | null;
 }
 
 export interface ChatMessage {
     id: number;
     player_name: string;
-    player_symbol: PlayerSymbol;
+    player_symbol: PlayerSymbol | null;
     content: string;
     created_at: string;
+    is_system?: boolean;
 }
 
 export interface GamePageProps {
