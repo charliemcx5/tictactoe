@@ -130,9 +130,27 @@ const cleanupListener = router.on('before', (event) => {
         game.value.mode === 'online' &&
         (game.value.status === 'playing' || game.value.status === 'waiting')
     ) {
-        event.preventDefault();
-        pendingVisit.value = event.detail.visit;
-        showConfirmLeave.value = true;
+        const url = event.detail.visit.url.toString();
+        const code = game.value.code;
+        
+        // Define safe paths that are in-game actions and shouldn't trigger confirmation
+        const safePaths = [
+            `/game/${code}/move`,
+            `/game/${code}/chat`,
+            `/game/${code}/timer`,
+            `/game/${code}/request-rematch`,
+            `/game/${code}/accept-rematch`
+        ];
+
+        // Also allow reloads of the current page
+        const isCurrentPage = url.includes(window.location.pathname);
+        const isSafeAction = safePaths.some(path => url.includes(path));
+
+        if (!isSafeAction && !isCurrentPage) {
+            event.preventDefault();
+            pendingVisit.value = event.detail.visit;
+            showConfirmLeave.value = true;
+        }
     }
 });
 
