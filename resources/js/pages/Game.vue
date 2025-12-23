@@ -318,7 +318,7 @@ function handleModeUpdate(newMode: 'online' | 'bot') {
         @update:timer-setting="updateTimer"
         @update:mode="handleModeUpdate"
     >
-        <div class="container mx-auto mt-8 px-4 py-8">
+        <div class="mt-8 w-full px-6 py-8">
             <div class="flex flex-col gap-8 lg:flex-row">
                 <!-- Main Game Area -->
                 <div class="flex-1">

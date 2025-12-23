@@ -12,19 +12,27 @@ import TicTacToeLogo from '@/components/TicTacToeLogo.vue';
 import { useAppearance } from '@/composables/useAppearance';
 
 const page = usePage();
-const { appearance, toggleDarkMode } = useAppearance();
+const { appearance, updateAppearance } = useAppearance();
+
+const toggleDarkMode = () => {
+    updateAppearance(appearance.value === 'dark' ? 'light' : 'dark');
+};
 
 // Props for the layout
 withDefaults(
     defineProps<{
         showModeSelector?: boolean;
+        showTimerSelector?: boolean;
         timerSetting?: string;
         mode?: 'online' | 'bot';
+        timerDisabled?: boolean;
     }>(),
     {
         showModeSelector: true,
+        showTimerSelector: true,
         timerSetting: 'off',
         mode: 'bot',
+        timerDisabled: false,
     },
 );
 
@@ -39,30 +47,32 @@ const timerOptions = ['off', '5', '10', '30'];
 <template>
     <div class="flex min-h-screen flex-col bg-background text-foreground">
         <!-- Header -->
-        <header class="border-b border-border">
-            <div class="container mx-auto flex items-center justify-between px-4 py-3">
+        <header class="">
+            <div class="flex items-center justify-between px-6 py-3">
                 <!-- Logo -->
                 <Link href="/" class="flex items-center gap-2">
                     <TicTacToeLogo class="size-6 text-yellow-500" />
-                    <span class="text-lg font-semibold">tictactoe</span>
+                    <span class="text-lg font-medium">tictactoe</span>
                 </Link>
 
                 <!-- Mode & Timer Selector -->
-                <div v-if="showModeSelector" class="flex items-center gap-6">
+                <div v-if="showModeSelector || showTimerSelector" class="flex items-center gap-6">
                     <!-- Timer -->
-                    <div class="flex items-center gap-2">
+                    <div v-if="showTimerSelector" class="flex items-center gap-2">
                         <span class="text-sm text-muted-foreground">TIMER</span>
                         <div class="flex rounded-lg bg-muted p-1">
                             <button
                                 v-for="t in timerOptions"
                                 :key="t"
+                                :disabled="timerDisabled"
                                 :class="[
                                     'rounded-md px-3 py-1 text-sm font-medium transition-colors',
                                     timerSetting === t
                                         ? 'bg-background text-foreground shadow-sm'
                                         : 'text-muted-foreground hover:text-foreground',
+                                    timerDisabled && 'cursor-not-allowed opacity-50',
                                 ]"
-                                @click="emit('update:timerSetting', t)"
+                                @click="!timerDisabled && emit('update:timerSetting', t)"
                             >
                                 {{ t === 'off' ? 'Off' : `${t}s` }}
                             </button>
@@ -70,7 +80,7 @@ const timerOptions = ['off', '5', '10', '30'];
                     </div>
 
                     <!-- Mode -->
-                    <div class="flex items-center gap-2">
+                    <div v-if="showModeSelector" class="flex items-center gap-2">
                         <span class="text-sm text-muted-foreground">MODE</span>
                         <div class="flex rounded-lg bg-muted p-1">
                             <button
@@ -103,37 +113,43 @@ const timerOptions = ['off', '5', '10', '30'];
 
                 <!-- Auth -->
                 <div class="flex items-center gap-2">
-                    <User class="size-4 text-muted-foreground" />
                     <Link
                         v-if="!page.props.auth?.user"
                         href="/login"
-                        class="text-sm hover:underline"
+                        class="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
                     >
-                        Log in
+                        <User class="size-4" />
+                        <span class="text-md">Log in</span>
                     </Link>
-                    <template v-else>
-                        <span class="text-sm">{{ page.props.auth.user.name }}</span>
-                    </template>
+                    <div
+                        v-else
+                        class="flex cursor-pointer items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                        <User class="size-4" />
+                        <span class="text-md">{{ page.props.auth.user.name }}</span>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1">
+        <main class="flex-1 flex" :class="{ 'justify-center': $page.url === '/' }">
             <slot />
         </main>
 
         <!-- Footer -->
-        <footer class="border-t border-border py-4">
-            <div class="container mx-auto flex items-center justify-between px-4">
+        <footer class="py-4">
+            <div class="flex items-center justify-between px-6">
                 <div class="flex items-center gap-4">
                     <button
-                        class="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                        class="flex items-center cursor-pointer gap-1.5 text-sm text-muted-foreground hover:text-foreground"
                         @click="toggleDarkMode"
                     >
-                        <Moon v-if="appearance === 'light'" class="size-4" />
-                        <Sun v-else class="size-4" />
-                        <span>{{ appearance === 'dark' ? 'Light' : 'Dark' }}</span>
+                        <component
+                            :is="appearance === 'dark' ? Moon : appearance === 'light' ? Sun : Monitor"
+                            class="size-4"
+                        />
+                        <span class="capitalize">{{ appearance }}</span>
                     </button>
                     <a
                         href="https://github.com"
