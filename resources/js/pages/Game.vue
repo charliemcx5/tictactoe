@@ -42,11 +42,35 @@ const showTimer = computed(
     () => game.value.timer_setting !== 'off' && isPlaying.value,
 );
 
+// Timer can only be changed by X player between rounds (not during playing)
+const canChangeTimer = computed(
+    () => playerSymbol.value === 'X' && !isPlaying.value,
+);
+
 const resultMessage = computed(() => {
     if (!isFinished.value) return '';
     if (game.value.winner === 'draw') return "It's a draw!";
     if (game.value.winner === playerSymbol.value) return 'You won!';
     return 'You lost!';
+});
+
+const rematchRequestedByMe = computed(() => {
+    const rematchBy = (game.value as any).rematch_requested_by as PlayerSymbol | null | undefined;
+    return rematchBy === playerSymbol.value;
+});
+
+const rematchRequestedByOpponent = computed(() => {
+    const rematchBy = (game.value as any).rematch_requested_by as PlayerSymbol | null | undefined;
+    return !!rematchBy && rematchBy !== playerSymbol.value;
+});
+
+const canRequestRematch = computed(() => {
+    const rematchBy = (game.value as any).rematch_requested_by as PlayerSymbol | null | undefined;
+    return isFinished.value && !rematchBy;
+});
+
+const canAcceptRematch = computed(() => {
+    return isFinished.value && rematchRequestedByOpponent.value;
 });
 
 // Setup real-time listeners using useEchoPublic for guest support
@@ -56,18 +80,30 @@ const { leave: leaveChannel } = useEchoPublic<{ game?: Partial<Game>; message?: 
     (payload) => {
         // Handle PlayerJoined event
         if (payload.player_name && payload.game) {
-            game.value.player_o_name = payload.player_name;
-            Object.assign(game.value, payload.game);
+            game.value = { ...game.value, ...payload.game, player_o_name: payload.player_name };
             startTimerIfNeeded();
         }
         // Handle GameUpdated event
         else if (payload.game) {
-            Object.assign(game.value, payload.game);
+            // If game was reset (status changed from finished to playing), reload page to get fresh session
+            const wasFinished = game.value.status === 'finished';
+            const isNowPlaying = payload.game.status === 'playing';
+            
+            if (wasFinished && isNowPlaying && game.value.mode === 'online') {
+                // Reload page to get fresh session-based props
+                router.reload();
+                return;
+            }
+            
+            // Fully replace game state with broadcast data
+            game.value = { ...game.value, ...payload.game };
             startTimerIfNeeded();
         }
         // Handle ChatMessageSent event
         if (payload.message) {
-            messages.value.push(payload.message);
+            if (!messages.value.some((m) => m.id === payload.message!.id)) {
+                messages.value.push(payload.message);
+            }
         }
     },
 );
@@ -123,6 +159,20 @@ watch(() => game.value.current_turn, () => {
     }
 });
 
+// Watch for prop changes from page navigation/reload (e.g., after playAgain redirect)
+watch(() => props.game, (newGame) => {
+    game.value = newGame;
+    startTimerIfNeeded();
+}, { deep: true });
+
+watch(() => props.playerSymbol, (newSymbol) => {
+    playerSymbol.value = newSymbol;
+});
+
+watch(() => props.messages, (newMessages) => {
+    messages.value = newMessages;
+}, { deep: true });
+
 // Actions
 function makeMove(position: number) {
     if (!isMyTurn.value || !isPlaying.value || isLoading.value) return;
@@ -157,8 +207,16 @@ function makeMove(position: number) {
     );
 }
 
-function playAgain() {
-    router.post(`/game/${game.value.code}/play-again`, {}, { preserveScroll: true });
+function requestRematch() {
+    router.post(`/game/${game.value.code}/request-rematch`, {}, {
+        preserveScroll: true,
+    });
+}
+
+function acceptRematch() {
+    router.post(`/game/${game.value.code}/accept-rematch`, {}, {
+        preserveScroll: true,
+    });
 }
 
 function forfeit() {
@@ -174,15 +232,37 @@ function sendMessage(content: string) {
 }
 
 function goHome() {
-    router.visit('/');
+    // For online games that are playing or finished, notify other player
+    if (game.value.mode === 'online' && (isPlaying.value || isFinished.value)) {
+        router.post(`/game/${game.value.code}/leave`);
+    } else {
+        router.visit('/');
+    }
+}
+
+function updateTimer(timerSetting: string) {
+    if (!canChangeTimer.value) return;
+    router.post(`/game/${game.value.code}/timer`, { timer_setting: timerSetting }, {
+        preserveScroll: true,
+        onSuccess: (page) => {
+            const pageProps = page.props as unknown as GamePageProps;
+            game.value = pageProps.game;
+        },
+    });
 }
 </script>
 
 <template>
     <Head :title="`Game ${game.code}`" />
 
-    <GameLayout :show-mode-selector="false">
-        <div class="container mx-auto px-4 py-8">
+    <GameLayout
+        :show-mode-selector="false"
+        :show-timer-selector="true"
+        :timer-setting="game.timer_setting"
+        :timer-disabled="!canChangeTimer"
+        @update:timer-setting="updateTimer"
+    >
+        <div class="container mx-auto mt-8 px-4 py-8">
             <div class="flex flex-col gap-8 lg:flex-row">
                 <!-- Main Game Area -->
                 <div class="flex-1">
@@ -253,10 +333,39 @@ function goHome() {
 
                         <!-- Actions -->
                         <div class="flex justify-center gap-4">
-                            <Button v-if="isFinished" @click="playAgain"> Play Again </Button>
-                            <Button v-if="isFinished" variant="outline" @click="goHome">
-                                Back to Home
-                            </Button>
+                            <template v-if="isFinished">
+                                <!-- Bot games: simple play again -->
+                                <Button v-if="game.mode === 'bot'" @click="requestRematch">
+                                    Play Again
+                                </Button>
+                                
+                                <!-- Online games: rematch request/accept flow -->
+                                <template v-else-if="game.mode === 'online'">
+                                    <Button
+                                        v-if="canRequestRematch"
+                                        @click="requestRematch"
+                                    >
+                                        Request Rematch
+                                    </Button>
+                                    <Button
+                                        v-if="rematchRequestedByMe"
+                                        variant="outline"
+                                        disabled
+                                    >
+                                        Rematch Requested...
+                                    </Button>
+                                    <Button
+                                        v-if="canAcceptRematch"
+                                        @click="acceptRematch"
+                                    >
+                                        Accept Rematch
+                                    </Button>
+                                </template>
+                                
+                                <Button variant="outline" @click="goHome">
+                                    Back to Home
+                                </Button>
+                            </template>
                             <Button
                                 v-if="isPlaying && game.mode === 'online'"
                                 variant="destructive"

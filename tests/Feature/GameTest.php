@@ -285,6 +285,8 @@ test('play again resets board', function () {
         'current_turn' => 'O',
         'status' => 'finished',
         'winner' => 'draw',
+        'mode' => 'bot',
+        'player_o_name' => 'Bot',
     ]);
 
     session(['game_player' => [
@@ -293,7 +295,7 @@ test('play again resets board', function () {
         'name' => 'Player',
     ]]);
 
-    $response = $this->post(route('game.playAgain', $game->code));
+    $response = $this->post(route('game.requestRematch', $game->code));
 
     $response->assertRedirect();
     $game->refresh();
