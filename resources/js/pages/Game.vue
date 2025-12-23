@@ -7,6 +7,14 @@ import GameBoard from '@/components/game/GameBoard.vue';
 import PlayerInfo from '@/components/game/PlayerInfo.vue';
 import GameChat from '@/components/game/GameChat.vue';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { useTimer } from '@/composables/useTimer';
 import type { Game, ChatMessage, PlayerSymbol, GamePageProps } from '@/types/game';
 
@@ -16,6 +24,11 @@ const game = ref<Game>(props.game);
 const playerSymbol = ref<PlayerSymbol | null>(props.playerSymbol);
 const messages = ref<ChatMessage[]>(props.messages);
 const isLoading = ref(false);
+
+// Confirmation state
+const showConfirmLeave = ref(false);
+const pendingVisit = ref<any>(null);
+const skipConfirmation = ref(false);
 
 const { remainingTime, startTimer, stopTimer } = useTimer();
 
@@ -74,8 +87,8 @@ const canAcceptRematch = computed(() => {
 });
 
 // Setup real-time listeners using useEchoPublic for guest support
-const { leave: leaveChannel } = useEchoPublic<{ game?: Partial<Game>; message?: ChatMessage; player_name?: string }>(
-    `game.${props.game.code}`,
+const { leave: leaveChannel } = useEchoPublic<{ game?: Partial<Game>; message?: ChatMessage; player_name?: string }>
+    (`game.${props.game.code}`,
     ['.App\\Events\\GameUpdated', '.App\\Events\\PlayerJoined', '.App\\Events\\ChatMessageSent'],
     (payload) => {
         // Handle PlayerJoined event
@@ -108,6 +121,21 @@ const { leave: leaveChannel } = useEchoPublic<{ game?: Partial<Game>; message?: 
     },
 );
 
+// Navigation interception
+const cleanupListener = router.on('before', (event) => {
+    if (skipConfirmation.value) return;
+
+    // Only confirm if game is active (playing or waiting) and online
+    if (
+        game.value.mode === 'online' &&
+        (game.value.status === 'playing' || game.value.status === 'waiting')
+    ) {
+        event.preventDefault();
+        pendingVisit.value = event.detail.visit;
+        showConfirmLeave.value = true;
+    }
+});
+
 onMounted(() => {
     startTimerIfNeeded();
 });
@@ -115,7 +143,21 @@ onMounted(() => {
 onUnmounted(() => {
     stopTimer();
     leaveChannel();
+    cleanupListener();
 });
+
+function confirmLeave() {
+    if (pendingVisit.value) {
+        skipConfirmation.value = true;
+        showConfirmLeave.value = false;
+        router.visit(pendingVisit.value.url, pendingVisit.value);
+    }
+}
+
+function cancelLeave() {
+    showConfirmLeave.value = false;
+    pendingVisit.value = null;
+}
 
 function startTimerIfNeeded() {
     if (game.value.timer_setting !== 'off' && isPlaying.value) {
@@ -250,17 +292,31 @@ function updateTimer(timerSetting: string) {
         },
     });
 }
+
+function handleModeUpdate(newMode: 'online' | 'bot') {
+    if (newMode === game.value.mode) return;
+
+    // Trigger navigation to create new game
+    // This will be caught by router.on('before')
+    router.post('/game', {
+        player_name: myName.value ?? 'Player',
+        mode: newMode,
+        timer_setting: 'off',
+    });
+}
 </script>
 
 <template>
     <Head :title="`Game ${game.code}`" />
 
     <GameLayout
-        :show-mode-selector="false"
+        :show-mode-selector="true"
         :show-timer-selector="true"
+        :mode="game.mode"
         :timer-setting="game.timer_setting"
         :timer-disabled="!canChangeTimer"
         @update:timer-setting="updateTimer"
+        @update:mode="handleModeUpdate"
     >
         <div class="container mx-auto mt-8 px-4 py-8">
             <div class="flex flex-col gap-8 lg:flex-row">
@@ -394,5 +450,20 @@ function updateTimer(timerSetting: string) {
                 </div>
             </div>
         </div>
+
+        <Dialog :open="showConfirmLeave" @update:open="showConfirmLeave = $event">
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Leave Game?</DialogTitle>
+                    <DialogDescription>
+                        Are you sure you want to leave? You will forfeit the current game.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button variant="outline" @click="cancelLeave">Cancel</Button>
+                    <Button variant="destructive" @click="confirmLeave">Leave Game</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </GameLayout>
 </template>
