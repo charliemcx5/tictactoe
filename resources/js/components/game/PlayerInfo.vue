@@ -20,7 +20,10 @@ withDefaults(defineProps<Props>(), {
     <div class="flex flex-col items-center gap-1">
         <div
             :class="
-                cn('text-4xl font-bold', symbol === 'X' ? 'text-yellow-500' : 'text-foreground')
+                cn(
+                    'text-4xl font-bold',
+                    symbol === 'X' ? 'text-yellow-500' : 'text-foreground',
+                )
             "
         >
             {{ symbol }}
@@ -29,6 +32,8 @@ withDefaults(defineProps<Props>(), {
             <span class="font-medium">{{ name }}</span>
             <span v-if="isYou" class="text-muted-foreground">(you)</span>
         </div>
-        <div class="text-sm font-mono text-muted-foreground">Score: {{ score }}</div>
+        <div class="font-mono text-sm text-muted-foreground">
+            Score: {{ score }}
+        </div>
     </div>
 </template>

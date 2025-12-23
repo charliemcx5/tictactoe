@@ -7,11 +7,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { request } from '@/routes/password';
 import { store as loginStore } from '@/routes/login';
+import { request } from '@/routes/password';
 import { store as registerStore } from '@/routes/register';
 import { Form, Head } from '@inertiajs/vue3';
-import { User, ArrowRight } from 'lucide-vue-next';
+import { ArrowRight, User } from 'lucide-vue-next';
 
 defineProps<{
     status?: string;
@@ -37,23 +37,32 @@ defineProps<{
             <div class="rounded-xl bg-card shadow-lg">
                 <div class="grid md:grid-cols-2">
                     <!-- Register Section (Left) -->
-                    <div class="border-b border-border p-8 md:border-b-0 md:border-r">
+                    <div
+                        class="border-b border-border p-8 md:border-r md:border-b-0"
+                    >
                         <div class="mb-6 flex items-center gap-2">
                             <User class="size-4 text-muted-foreground" />
-                            <h2 class="text-lg font-medium uppercase tracking-wide text-muted-foreground">
+                            <h2
+                                class="text-lg font-medium tracking-wide text-muted-foreground uppercase"
+                            >
                                 Register
                             </h2>
                         </div>
 
                         <Form
                             v-bind="registerStore.form()"
-                            :reset-on-success="['password', 'password_confirmation']"
+                            :reset-on-success="[
+                                'password',
+                                'password_confirmation',
+                            ]"
                             v-slot="{ errors, processing }"
                             class="flex flex-col gap-6"
                         >
                             <div class="grid gap-4">
                                 <div class="grid gap-2">
-                                    <Label for="register-name" class="sr-only">Username</Label>
+                                    <Label for="register-name" class="sr-only"
+                                        >Username</Label
+                                    >
                                     <Input
                                         id="register-name"
                                         type="text"
@@ -69,7 +78,9 @@ defineProps<{
                                 </div>
 
                                 <div class="grid gap-2">
-                                    <Label for="register-email" class="sr-only">Email</Label>
+                                    <Label for="register-email" class="sr-only"
+                                        >Email</Label
+                                    >
                                     <Input
                                         id="register-email"
                                         type="email"
@@ -84,7 +95,11 @@ defineProps<{
                                 </div>
 
                                 <div class="grid gap-2">
-                                    <Label for="register-password" class="sr-only">Password</Label>
+                                    <Label
+                                        for="register-password"
+                                        class="sr-only"
+                                        >Password</Label
+                                    >
                                     <Input
                                         id="register-password"
                                         type="password"
@@ -99,7 +114,11 @@ defineProps<{
                                 </div>
 
                                 <div class="grid gap-2">
-                                    <Label for="register-password-confirmation" class="sr-only">Verify password</Label>
+                                    <Label
+                                        for="register-password-confirmation"
+                                        class="sr-only"
+                                        >Verify password</Label
+                                    >
                                     <Input
                                         id="register-password-confirmation"
                                         type="password"
@@ -110,7 +129,9 @@ defineProps<{
                                         placeholder="verify password"
                                         class="bg-muted"
                                     />
-                                    <InputError :message="errors.password_confirmation" />
+                                    <InputError
+                                        :message="errors.password_confirmation"
+                                    />
                                 </div>
 
                                 <Button
@@ -132,7 +153,9 @@ defineProps<{
                     <div class="p-8">
                         <div class="mb-6 flex items-center gap-2">
                             <ArrowRight class="size-4 text-muted-foreground" />
-                            <h2 class="text-lg font-medium uppercase tracking-wide text-muted-foreground">
+                            <h2
+                                class="text-lg font-medium tracking-wide text-muted-foreground uppercase"
+                            >
                                 Login
                             </h2>
                         </div>
@@ -152,7 +175,9 @@ defineProps<{
                         >
                             <div class="grid gap-4">
                                 <div class="grid gap-2">
-                                    <Label for="login-email" class="sr-only">Email</Label>
+                                    <Label for="login-email" class="sr-only"
+                                        >Email</Label
+                                    >
                                     <Input
                                         id="login-email"
                                         type="email"
@@ -167,8 +192,14 @@ defineProps<{
                                 </div>
 
                                 <div class="grid gap-2">
-                                    <div class="flex items-center justify-between">
-                                        <Label for="login-password" class="sr-only">Password</Label>
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <Label
+                                            for="login-password"
+                                            class="sr-only"
+                                            >Password</Label
+                                        >
                                         <TextLink
                                             v-if="canResetPassword"
                                             :href="request()"
@@ -192,8 +223,15 @@ defineProps<{
                                 </div>
 
                                 <div class="flex items-center gap-2">
-                                    <Checkbox id="remember" name="remember" :tabindex="8" />
-                                    <Label for="remember" class="text-sm text-muted-foreground cursor-pointer">
+                                    <Checkbox
+                                        id="remember"
+                                        name="remember"
+                                        :tabindex="8"
+                                    />
+                                    <Label
+                                        for="remember"
+                                        class="cursor-pointer text-sm text-muted-foreground"
+                                    >
                                         remember me
                                     </Label>
                                 </div>
@@ -216,4 +254,3 @@ defineProps<{
         </div>
     </div>
 </template>
-

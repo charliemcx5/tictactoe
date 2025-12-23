@@ -33,13 +33,17 @@ const passwordInput = useTemplateRef('passwordInput');
     <Card>
         <CardHeader>
             <CardTitle>Delete account</CardTitle>
-            <CardDescription>Delete your account and all of its resources</CardDescription>
+            <CardDescription
+                >Delete your account and all of its resources</CardDescription
+            >
         </CardHeader>
         <CardContent>
             <div
                 class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
             >
-                <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
+                <div
+                    class="relative space-y-0.5 text-red-600 dark:text-red-100"
+                >
                     <p class="font-medium">Warning</p>
                     <p class="text-sm">
                         Please proceed with caution, this cannot be undone.
@@ -47,7 +51,9 @@ const passwordInput = useTemplateRef('passwordInput');
                 </div>
                 <Dialog>
                     <DialogTrigger as-child>
-                        <Button variant="destructive" data-test="delete-user-button"
+                        <Button
+                            variant="destructive"
+                            data-test="delete-user-button"
                             >Delete account</Button
                         >
                     </DialogTrigger>
@@ -70,9 +76,9 @@ const passwordInput = useTemplateRef('passwordInput');
                                 <DialogDescription>
                                     Once your account is deleted, all of its
                                     resources and data will also be permanently
-                                    deleted. Please enter your password to confirm
-                                    you would like to permanently delete your
-                                    account.
+                                    deleted. Please enter your password to
+                                    confirm you would like to permanently delete
+                                    your account.
                                 </DialogDescription>
                             </DialogHeader>
 

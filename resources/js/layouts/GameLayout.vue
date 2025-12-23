@@ -1,15 +1,8 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
-import {
-    Bot,
-    Github,
-    Monitor,
-    Moon,
-    Sun,
-    User,
-} from 'lucide-vue-next';
 import TicTacToeLogo from '@/components/TicTacToeLogo.vue';
 import { useAppearance } from '@/composables/useAppearance';
+import { Link, usePage } from '@inertiajs/vue3';
+import { Bot, Github, Monitor, Moon, Sun, User } from 'lucide-vue-next';
 
 const page = usePage();
 const { appearance, updateAppearance } = useAppearance();
@@ -56,9 +49,15 @@ const timerOptions = ['off', '5', '10', '30'];
                 </Link>
 
                 <!-- Mode & Timer Selector -->
-                <div v-if="showModeSelector || showTimerSelector" class="flex items-center gap-6">
+                <div
+                    v-if="showModeSelector || showTimerSelector"
+                    class="flex items-center gap-6"
+                >
                     <!-- Timer -->
-                    <div v-if="showTimerSelector" class="flex items-center gap-2">
+                    <div
+                        v-if="showTimerSelector"
+                        class="flex items-center gap-2"
+                    >
                         <span class="text-sm text-muted-foreground">TIMER</span>
                         <div class="flex rounded-lg bg-muted p-1">
                             <button
@@ -70,9 +69,13 @@ const timerOptions = ['off', '5', '10', '30'];
                                     timerSetting === t
                                         ? 'bg-background text-foreground shadow-sm'
                                         : 'text-muted-foreground hover:text-foreground',
-                                    timerDisabled && 'cursor-not-allowed opacity-50',
+                                    timerDisabled &&
+                                        'cursor-not-allowed opacity-50',
                                 ]"
-                                @click="!timerDisabled && emit('update:timerSetting', t)"
+                                @click="
+                                    !timerDisabled &&
+                                    emit('update:timerSetting', t)
+                                "
                             >
                                 {{ t === 'off' ? 'Off' : `${t}s` }}
                             </button>
@@ -80,7 +83,10 @@ const timerOptions = ['off', '5', '10', '30'];
                     </div>
 
                     <!-- Mode -->
-                    <div v-if="showModeSelector" class="flex items-center gap-2">
+                    <div
+                        v-if="showModeSelector"
+                        class="flex items-center gap-2"
+                    >
                         <span class="text-sm text-muted-foreground">MODE</span>
                         <div class="flex rounded-lg bg-muted p-1">
                             <button
@@ -127,14 +133,19 @@ const timerOptions = ['off', '5', '10', '30'];
                         class="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
                     >
                         <User class="size-4" />
-                        <span class="text-md">{{ page.props.auth.user.name }}</span>
+                        <span class="text-md">{{
+                            page.props.auth.user.name
+                        }}</span>
                     </Link>
                 </div>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 flex" :class="{ 'justify-center': $page.url === '/' }">
+        <main
+            class="flex flex-1"
+            :class="{ 'justify-center': $page.url === '/' }"
+        >
             <slot />
         </main>
 
@@ -143,11 +154,17 @@ const timerOptions = ['off', '5', '10', '30'];
             <div class="flex items-center justify-between px-6">
                 <div class="flex items-center gap-4">
                     <button
-                        class="flex items-center cursor-pointer gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                        class="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
                         @click="toggleDarkMode"
                     >
                         <component
-                            :is="appearance === 'dark' ? Moon : appearance === 'light' ? Sun : Monitor"
+                            :is="
+                                appearance === 'dark'
+                                    ? Moon
+                                    : appearance === 'light'
+                                      ? Sun
+                                      : Monitor
+                            "
                             class="size-4"
                         />
                         <span class="capitalize">{{ appearance }}</span>

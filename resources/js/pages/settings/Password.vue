@@ -25,7 +25,10 @@ import { Label } from '@/components/ui/label';
             <Card>
                 <CardHeader>
                     <CardTitle>Update password</CardTitle>
-                    <CardDescription>Ensure your account is using a long, random password to stay secure</CardDescription>
+                    <CardDescription
+                        >Ensure your account is using a long, random password to
+                        stay secure</CardDescription
+                    >
                 </CardHeader>
                 <CardContent>
                     <Form
@@ -43,7 +46,9 @@ import { Label } from '@/components/ui/label';
                         v-slot="{ errors, processing, recentlySuccessful }"
                     >
                         <div class="grid gap-2">
-                            <Label for="current_password">Current password</Label>
+                            <Label for="current_password"
+                                >Current password</Label
+                            >
                             <Input
                                 id="current_password"
                                 name="current_password"
@@ -80,7 +85,9 @@ import { Label } from '@/components/ui/label';
                                 autocomplete="new-password"
                                 placeholder="Confirm password"
                             />
-                            <InputError :message="errors.password_confirmation" />
+                            <InputError
+                                :message="errors.password_confirmation"
+                            />
                         </div>
 
                         <div class="flex items-center gap-4">

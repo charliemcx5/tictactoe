@@ -38,7 +38,9 @@ const user = page.props.auth.user;
                 <Card>
                     <CardHeader>
                         <CardTitle>Profile information</CardTitle>
-                        <CardDescription>Update your name and email address</CardDescription>
+                        <CardDescription
+                            >Update your name and email address</CardDescription
+                        >
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -57,7 +59,10 @@ const user = page.props.auth.user;
                                     autocomplete="name"
                                     placeholder="Full name"
                                 />
-                                <InputError class="mt-2" :message="errors.name" />
+                                <InputError
+                                    class="mt-2"
+                                    :message="errors.name"
+                                />
                             </div>
 
                             <div class="grid gap-2">
@@ -72,10 +77,17 @@ const user = page.props.auth.user;
                                     autocomplete="username"
                                     placeholder="Email address"
                                 />
-                                <InputError class="mt-2" :message="errors.email" />
+                                <InputError
+                                    class="mt-2"
+                                    :message="errors.email"
+                                />
                             </div>
 
-                            <div v-if="mustVerifyEmail && !user.email_verified_at">
+                            <div
+                                v-if="
+                                    mustVerifyEmail && !user.email_verified_at
+                                "
+                            >
                                 <p class="-mt-4 text-sm text-muted-foreground">
                                     Your email address is unverified.
                                     <Link
@@ -83,7 +95,8 @@ const user = page.props.auth.user;
                                         as="button"
                                         class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                                     >
-                                        Click here to resend the verification email.
+                                        Click here to resend the verification
+                                        email.
                                     </Link>
                                 </p>
 
@@ -91,8 +104,8 @@ const user = page.props.auth.user;
                                     v-if="status === 'verification-link-sent'"
                                     class="mt-2 text-sm font-medium text-green-600"
                                 >
-                                    A new verification link has been sent to your email
-                                    address.
+                                    A new verification link has been sent to
+                                    your email address.
                                 </div>
                             </div>
 

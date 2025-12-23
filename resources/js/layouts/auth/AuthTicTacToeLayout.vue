@@ -2,8 +2,8 @@
 import TicTacToeLogo from '@/components/TicTacToeLogo.vue';
 import { Card } from '@/components/ui/card';
 import { useAppearance } from '@/composables/useAppearance';
-import { Github, Monitor, Moon, Sun } from 'lucide-vue-next';
 import { Link } from '@inertiajs/vue3';
+import { Github, Monitor, Moon, Sun } from 'lucide-vue-next';
 
 defineProps<{
     title?: string;
@@ -31,24 +31,32 @@ const toggleDarkMode = () => {
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 flex items-center justify-center p-6">
+        <main class="flex flex-1 items-center justify-center p-6">
             <Card>
-            <div class="w-full max-w-md p-6">
-                <div class="mb-6 flex flex-col items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <TicTacToeLogo class="size-8 text-yellow-500" />
-                        <span class="text-xl font-medium">tictactoe</span>
+                <div class="w-full max-w-md p-6">
+                    <div class="mb-6 flex flex-col items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <TicTacToeLogo class="size-8 text-yellow-500" />
+                            <span class="text-xl font-medium">tictactoe</span>
+                        </div>
+                        <div
+                            v-if="title || description"
+                            class="space-y-2 text-center"
+                        >
+                            <h1 v-if="title" class="text-xl font-medium">
+                                {{ title }}
+                            </h1>
+                            <p
+                                v-if="description"
+                                class="text-sm text-muted-foreground"
+                            >
+                                {{ description }}
+                            </p>
+                        </div>
                     </div>
-                    <div v-if="title || description" class="space-y-2 text-center">
-                        <h1 v-if="title" class="text-xl font-medium">{{ title }}</h1>
-                        <p v-if="description" class="text-sm text-muted-foreground">
-                            {{ description }}
-                        </p>
-                    </div>
-                </div>
                     <slot />
-            </div>
-        </Card>
+                </div>
+            </Card>
         </main>
 
         <!-- Footer -->
@@ -56,11 +64,17 @@ const toggleDarkMode = () => {
             <div class="flex items-center justify-between px-6">
                 <div class="flex items-center gap-4">
                     <button
-                        class="flex items-center cursor-pointer gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                        class="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
                         @click="toggleDarkMode"
                     >
                         <component
-                            :is="appearance === 'dark' ? Moon : appearance === 'light' ? Sun : Monitor"
+                            :is="
+                                appearance === 'dark'
+                                    ? Moon
+                                    : appearance === 'light'
+                                      ? Sun
+                                      : Monitor
+                            "
                             class="size-4"
                         />
                         <span class="capitalize">{{ appearance }}</span>
@@ -80,4 +94,3 @@ const toggleDarkMode = () => {
         </footer>
     </div>
 </template>
-

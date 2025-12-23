@@ -30,7 +30,8 @@ const emit = defineEmits<{
                     'hover:bg-muted/80 disabled:cursor-not-allowed',
                     cell === 'X' && 'text-yellow-500',
                     cell === 'O' && 'text-foreground',
-                    winningCells.includes(index) && 'bg-yellow-500/20 ring-2 ring-yellow-500',
+                    winningCells.includes(index) &&
+                        'bg-yellow-500/20 ring-2 ring-yellow-500',
                 )
             "
             @click="emit('cellClick', index)"

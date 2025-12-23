@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
 import TicTacToeLogo from '@/components/TicTacToeLogo.vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import { LogOut } from 'lucide-vue-next';
 
 const page = usePage();
@@ -24,7 +24,7 @@ const user = page.props.auth?.user as { name: string } | null;
                     href="/logout"
                     method="post"
                     as="button"
-                    class="flex items-center gap-1.5 text-md text-muted-foreground hover:text-foreground"
+                    class="text-md flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
                 >
                     <LogOut class="size-4" />
                     <span>Sign out</span>
