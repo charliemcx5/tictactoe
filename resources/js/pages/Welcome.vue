@@ -21,7 +21,7 @@ const user = page.props.auth?.user as { name: string } | null;
 
 const mode = ref<GameMode>('online');
 const timerSetting = ref<TimerSetting>('off');
-const playerName = ref(user?.name ?? '');
+const playerName = ref(user?.name ?? 'Guest');
 const joinCode = ref('');
 const isCreating = ref(false);
 const isJoining = ref(false);
@@ -35,9 +35,6 @@ const nameError = ref('');
 
 function handleModeUpdate(value: GameMode) {
     mode.value = value;
-    if (value === 'bot') {
-        handleCreateGame();
-    }
 }
 
 function handleCreateGame() {
