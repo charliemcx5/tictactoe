@@ -7,7 +7,7 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from '@/components/ui/input-otp';
-import AuthLayout from '@/layouts/AuthLayout.vue';
+import AuthTicTacToeLayout from '@/layouts/auth/AuthTicTacToeLayout.vue';
 import { store } from '@/routes/two-factor/login';
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -48,7 +48,7 @@ const code = ref<string>('');
 </script>
 
 <template>
-    <AuthLayout
+    <AuthTicTacToeLayout
         :title="authConfigContent.title"
         :description="authConfigContent.description"
     >
@@ -134,5 +134,5 @@ const code = ref<string>('');
                 </Form>
             </template>
         </div>
-    </AuthLayout>
+    </AuthTicTacToeLayout>
 </template>

@@ -29,6 +29,6 @@ withDefaults(defineProps<Props>(), {
             <span class="font-medium">{{ name }}</span>
             <span v-if="isYou" class="text-muted-foreground">(you)</span>
         </div>
-        <div class="text-sm text-muted-foreground">Score: {{ score }}</div>
+        <div class="text-sm font-mono text-muted-foreground">Score: {{ score }}</div>
     </div>
 </template>

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { GameMode, TimerSetting } from '@/types/game';
+import { Plus, ArrowDownToLine } from 'lucide-vue-next';
 
 const page = usePage();
 const user = page.props.auth?.user as { name: string } | null;
@@ -18,7 +19,18 @@ const isCreating = ref(false);
 const isJoining = ref(false);
 const errors = ref<{ player_name?: string; join?: string }>({});
 
+function handleModeUpdate(value: GameMode) {
+    mode.value = value;
+    if (value === 'bot') {
+        createGame();
+    }
+}
+
 function createGame() {
+    if (mode.value === 'bot' && !playerName.value.trim()) {
+        playerName.value = 'Guest';
+    }
+
     if (!playerName.value.trim()) {
         errors.value.player_name = 'Please enter your name';
         return;
@@ -81,78 +93,105 @@ function joinGame() {
     <GameLayout
         :mode="mode"
         :timer-setting="timerSetting"
-        @update:mode="mode = $event"
-        @update:timer-setting="timerSetting = $event"
+        @update:mode="handleModeUpdate"
+        @update:timer-setting="timerSetting = $event as TimerSetting"
     >
         <div class="flex flex-1 items-center justify-center px-4 py-12">
-            <div class="w-full max-w-md space-y-8">
+            <div class="w-full max-w-4xl space-y-8">
                 <!-- Welcome Message -->
                 <div class="text-center">
-                    <h1 class="text-3xl font-bold">Welcome to tictactoe</h1>
-                    <p class="mt-2 text-muted-foreground">
+                    <h1 class="text-4xl font-bold tracking-tight">Welcome to tictactoe</h1>
+                    <p class="mt-3 text-lg text-muted-foreground">
                         Play against the computer or challenge your friends!
                     </p>
                 </div>
 
-                <!-- Main Form -->
-                <div class="space-y-6">
-                    <!-- Player Name -->
-                    <div class="space-y-2">
-                        <Label for="playerName">Your Name</Label>
-                        <Input
-                            id="playerName"
-                            v-model="playerName"
-                            placeholder="Enter your name"
-                            :disabled="!!user"
-                            :class="{ 'border-destructive': errors.player_name }"
-                        />
-                        <p v-if="errors.player_name" class="text-sm text-destructive">
-                            {{ errors.player_name }}
-                        </p>
-                    </div>
-
-                    <!-- Create Game Button -->
-                    <Button
-                        class="w-full bg-yellow-500 text-black hover:bg-yellow-600"
-                        :disabled="isCreating"
-                        @click="createGame"
+                <!-- Cards Container -->
+                <div class="flex flex-col gap-6 md:flex-row">
+                    <!-- Create Game Card -->
+                    <div
+                        class="group flex-1 rounded-2xl border border-border bg-card p-6 pb-12 transition-all duration-300 hover:border-yellow-500/50"
                     >
-                        {{ isCreating ? 'Creating...' : 'Create Game' }}
-                    </Button>
-
-                    <!-- Join with Code (Online mode only) -->
-                    <template v-if="mode === 'online'">
-                        <div class="relative flex items-center">
-                            <div class="flex-1 border-t border-border"></div>
-                            <span class="px-4 text-sm text-muted-foreground">or</span>
-                            <div class="flex-1 border-t border-border"></div>
+                        <div class="mb-6 flex items-center gap-3">
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-500/10 transition-transform group-hover:scale-110"
+                            >
+                                <Plus class="h-5 w-5 text-yellow-500" />
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold">Create Game</h2>
+                                <p class="text-sm text-muted-foreground">Start a new match</p>
+                            </div>
                         </div>
 
-                        <div class="space-y-2">
-                            <Label for="joinCode">Join with Code</Label>
-                            <div class="flex gap-2">
+                        <div class="space-y-4">
+                            <div class="space-y-2">
+                                <Label for="playerName">Your Name</Label>
+                                <Input
+                                    id="playerName"
+                                    v-model="playerName"
+                                    placeholder="Enter your name"
+                                    :disabled="!!user"
+                                    :class="{ 'border-destructive': errors.player_name }"
+                                />
+                                <p v-if="errors.player_name" class="text-sm text-destructive">
+                                    {{ errors.player_name }}
+                                </p>
+                            </div>
+
+                            <Button
+                                class="w-full bg-black/80 cursor-pointer dark:bg-yellow-500/20 text-white transition-all hover:bg-black/90 hover:shadow-lg"
+                                :disabled="isCreating"
+                                @click="createGame"
+                            >
+                                {{ isCreating ? 'Creating...' : 'Create Game' }}
+                            </Button>
+                        </div>
+                    </div>
+
+                    <!-- Join Game Card (Online mode only) -->
+                    <div
+                        v-if="mode === 'online'"
+                        class="group flex-1 rounded-2xl border border-border bg-card p-6 pb-12 transition-all duration-300 hover:border-blue-500/50"
+                    >
+                        <div class="mb-6 flex items-center gap-3">
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 transition-transform group-hover:scale-110"
+                            >
+                                <ArrowDownToLine class="h-5 w-5 text-blue-500" />
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold">Join Game</h2>
+                                <p class="text-sm text-muted-foreground">Enter a game code</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="space-y-2">
+                                <Label for="joinCode">Game Code</Label>
                                 <Input
                                     id="joinCode"
                                     v-model="joinCode"
                                     placeholder="ABCDEF"
                                     maxlength="6"
-                                    class="flex-1 uppercase"
+                                    class="text-center font-mono text-lg uppercase tracking-widest"
                                     :class="{ 'border-destructive': errors.join }"
                                     @keyup.enter="joinGame"
                                 />
-                                <Button
-                                    variant="secondary"
-                                    :disabled="isJoining"
-                                    @click="joinGame"
-                                >
-                                    {{ isJoining ? 'Joining...' : 'Join' }}
-                                </Button>
+                                <p v-if="errors.join" class="text-sm text-destructive">
+                                    {{ errors.join }}
+                                </p>
                             </div>
-                            <p v-if="errors.join" class="text-sm text-destructive">
-                                {{ errors.join }}
-                            </p>
+
+                            <Button
+                                class="w-full bg-black/80 cursor-pointer dark:bg-blue-500/20 text-white transition-all hover:bg-black/90 hover:shadow-lg"
+                                :disabled="isJoining"
+                                @click="joinGame"
+                            >
+                                {{ isJoining ? 'Joining...' : 'Join Game' }}
+                            </Button>
                         </div>
-                    </template>
+                    </div>
                 </div>
             </div>
         </div>

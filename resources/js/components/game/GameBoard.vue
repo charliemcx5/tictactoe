@@ -18,7 +18,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="grid aspect-square w-full max-w-[320px] grid-cols-3 gap-2">
+    <div class="grid aspect-square w-full max-w-[380px] grid-cols-3 gap-2">
         <button
             v-for="(cell, index) in board"
             :key="index"

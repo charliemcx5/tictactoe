@@ -10,16 +10,18 @@ class BotService
         [0, 4, 8], [2, 4, 6],
     ];
 
-    public function getMove(array $board): int
+    public function getMove(array $board, string $botSymbol = 'O'): int
     {
+        $opponentSymbol = $botSymbol === 'X' ? 'O' : 'X';
+
         // 1. Check for winning move
-        $winMove = $this->findWinningMove($board, 'O');
+        $winMove = $this->findWinningMove($board, $botSymbol);
         if ($winMove !== null) {
             return $winMove;
         }
 
         // 2. Block opponent's winning move
-        $blockMove = $this->findWinningMove($board, 'X');
+        $blockMove = $this->findWinningMove($board, $opponentSymbol);
         if ($blockMove !== null) {
             return $blockMove;
         }

@@ -50,14 +50,20 @@ watch(
             <template v-if="messages.length === 0">
                 <p class="text-center text-sm text-muted-foreground">No messages yet</p>
             </template>
-            <div
-                v-for="message in messages"
-                :key="message.id"
-                :class="cn('text-sm', message.player_symbol === playerSymbol && 'text-right')"
-            >
-                <span class="text-muted-foreground">{{ message.player_name }}: </span>
-                <span>{{ message.content }}</span>
-            </div>
+            <template v-for="message in messages" :key="message.id">
+                <!-- System messages -->
+                <div v-if="message.is_system" class="text-center text-xs text-muted-foreground italic">
+                    {{ message.content }}
+                </div>
+                <!-- Regular messages -->
+                <div
+                    v-else
+                    :class="cn('text-sm', message.player_symbol === playerSymbol && 'text-right')"
+                >
+                    <span class="text-muted-foreground">{{ message.player_name }}: </span>
+                    <span>{{ message.content }}</span>
+                </div>
+            </template>
         </div>
 
         <!-- Input -->

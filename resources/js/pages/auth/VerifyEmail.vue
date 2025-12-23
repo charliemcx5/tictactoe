@@ -2,7 +2,7 @@
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import AuthLayout from '@/layouts/AuthLayout.vue';
+import AuthTicTacToeLayout from '@/layouts/auth/AuthTicTacToeLayout.vue';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
 import { Form, Head } from '@inertiajs/vue3';
@@ -13,7 +13,7 @@ defineProps<{
 </script>
 
 <template>
-    <AuthLayout
+    <AuthTicTacToeLayout
         title="Verify email"
         description="Please verify your email address by clicking on the link we just emailed to you."
     >
@@ -45,5 +45,5 @@ defineProps<{
                 Log out
             </TextLink>
         </Form>
-    </AuthLayout>
+    </AuthTicTacToeLayout>
 </template>

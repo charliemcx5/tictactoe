@@ -46,6 +46,7 @@ class GameUpdated implements ShouldBroadcast
                 'winner' => $this->game->winner,
                 'turn_started_at' => $this->game->turn_started_at?->toISOString(),
                 'winning_cells' => $winningCells,
+                'rematch_requested_by' => $this->game->rematch_requested_by,
             ],
         ];
     }

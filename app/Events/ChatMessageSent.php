@@ -33,6 +33,7 @@ class ChatMessageSent implements ShouldBroadcast
                 'player_symbol' => $this->message->player_symbol,
                 'content' => $this->message->content,
                 'created_at' => $this->message->created_at->toISOString(),
+                'is_system' => $this->message->is_system,
             ],
         ];
     }

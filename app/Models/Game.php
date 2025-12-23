@@ -26,6 +26,7 @@ class Game extends Model
         'status',
         'winner',
         'turn_started_at',
+        'rematch_requested_by',
     ];
 
     protected function casts(): array

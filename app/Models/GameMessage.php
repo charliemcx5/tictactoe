@@ -13,7 +13,15 @@ class GameMessage extends Model
         'player_name',
         'player_symbol',
         'content',
+        'is_system',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_system' => 'boolean',
+        ];
+    }
 
     public function game(): BelongsTo
     {

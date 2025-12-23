@@ -10,8 +10,8 @@ const user = page.props.auth?.user as { name: string } | null;
 <template>
     <div class="flex min-h-screen flex-col bg-background text-foreground">
         <!-- Header -->
-        <header class="border-b border-border">
-            <div class="container mx-auto flex items-center justify-between px-4 py-3">
+        <header class="">
+            <div class="flex items-center justify-between px-6 py-3">
                 <!-- Logo -->
                 <Link href="/" class="flex items-center gap-2">
                     <TicTacToeLogo class="size-6 text-yellow-500" />
@@ -24,7 +24,7 @@ const user = page.props.auth?.user as { name: string } | null;
                     href="/logout"
                     method="post"
                     as="button"
-                    class="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                    class="flex items-center gap-1.5 text-md text-muted-foreground hover:text-foreground"
                 >
                     <LogOut class="size-4" />
                     <span>Sign out</span>

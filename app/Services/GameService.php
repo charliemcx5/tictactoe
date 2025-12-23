@@ -76,10 +76,39 @@ class GameService
 
     public function resetBoard(Game $game): Game
     {
+        // Swap player sides
+        $tempName = $game->player_x_name;
+        $tempId = $game->player_x_id;
+        $tempScore = $game->player_x_score;
+
+        $game->player_x_name = $game->player_o_name;
+        $game->player_x_id = $game->player_o_id;
+        $game->player_x_score = $game->player_o_score;
+
+        $game->player_o_name = $tempName;
+        $game->player_o_id = $tempId;
+        $game->player_o_score = $tempScore;
+
+        // Reset board state
         $game->board = array_fill(0, 9, '');
         $game->current_turn = 'X';
         $game->status = 'playing';
         $game->winner = null;
+        $game->rematch_requested_by = null;
+        $game->turn_started_at = now();
+        $game->save();
+
+        return $game;
+    }
+
+    public function resetBoardSimple(Game $game): Game
+    {
+        // Reset board state without swapping sides (for bot games)
+        $game->board = array_fill(0, 9, '');
+        $game->current_turn = 'X';
+        $game->status = 'playing';
+        $game->winner = null;
+        $game->rematch_requested_by = null;
         $game->turn_started_at = now();
         $game->save();
 

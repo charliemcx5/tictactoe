@@ -121,13 +121,14 @@ const timerOptions = ['off', '5', '10', '30'];
                         <User class="size-4" />
                         <span class="text-md">Log in</span>
                     </Link>
-                    <div
+                    <Link
                         v-else
-                        class="flex cursor-pointer items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+                        href="/settings/profile"
+                        class="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
                     >
                         <User class="size-4" />
                         <span class="text-md">{{ page.props.auth.user.name }}</span>
-                    </div>
+                    </Link>
                 </div>
             </div>
         </header>
@@ -152,7 +153,7 @@ const timerOptions = ['off', '5', '10', '30'];
                         <span class="capitalize">{{ appearance }}</span>
                     </button>
                     <a
-                        href="https://github.com"
+                        href="https://github.com/charliemcx5/tictactoe"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
