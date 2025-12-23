@@ -38,6 +38,22 @@ test('guest can create online game', function () {
     ]);
 });
 
+test('guest can create online game with 5s timer', function () {
+    $response = $this->post(route('game.create'), [
+        'player_name' => 'Host Player',
+        'mode' => 'online',
+        'timer_setting' => '5',
+    ]);
+
+    $response->assertRedirect();
+    $this->assertDatabaseHas('games', [
+        'player_x_name' => 'Host Player',
+        'mode' => 'online',
+        'status' => 'waiting',
+        'timer_setting' => '5',
+    ]);
+});
+
 test('authenticated user can create game', function () {
     $user = User::factory()->create();
 
