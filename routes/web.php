@@ -21,14 +21,4 @@ Route::post('/game/{code}/timer', [GameController::class, 'updateTimer'])->name(
 Route::post('/game/{code}/leave', [GameController::class, 'leave'])->name('game.leave');
 Route::post('/game/{code}/chat', [ChatController::class, 'store'])->name('game.chat');
 
-Route::middleware([
-    'auth',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
-});
-
 require __DIR__.'/settings.php';

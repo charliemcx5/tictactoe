@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\ChatMessageSent;
 use App\Events\GameUpdated;
 use App\Events\PlayerJoined;
+use App\Events\PlayerLeft;
 use App\Models\Game;
 use App\Models\GameMessage;
 use App\Services\BotService;
@@ -335,18 +336,19 @@ class GameController extends Controller
             abort(403);
         }
 
-        // Create system message for player left
-        $message = GameMessage::create([
-            'game_id' => $game->id,
-            'player_name' => 'System',
-            'player_symbol' => null,
-            'content' => "{$sessionPlayer['name']} left the game",
-            'is_system' => true,
-        ]);
-        broadcast(new ChatMessageSent($message))->toOthers();
-
-        // Clear session
+        // Clear session first
         session()->forget('game_player');
+
+        // Bot games: delete immediately
+        if ($game->mode === 'bot') {
+            $game->delete();
+
+            return redirect()->route('home');
+        }
+
+        // Online games: notify other player and delete
+        broadcast(new PlayerLeft($game->code, $sessionPlayer['name']))->toOthers();
+        $game->delete();
 
         return redirect()->route('home');
     }

@@ -39,6 +39,10 @@ const showConfirmLeave = ref(false);
 const pendingVisit = ref<any>(null);
 const skipConfirmation = ref(false);
 
+// Player left state
+const showPlayerLeft = ref(false);
+const playerWhoLeft = ref('');
+
 const { remainingTime, startTimer, stopTimer } = useTimer();
 
 // Computed properties
@@ -123,8 +127,16 @@ const { leave: leaveChannel } = useEchoPublic<{
         '.App\\Events\\GameUpdated',
         '.App\\Events\\PlayerJoined',
         '.App\\Events\\ChatMessageSent',
+        '.App\\Events\\PlayerLeft',
     ],
     (payload) => {
+        // Handle PlayerLeft event
+        if (payload.player_name && !payload.game && !payload.message) {
+            playerWhoLeft.value = payload.player_name;
+            showPlayerLeft.value = true;
+            stopTimer();
+            return;
+        }
         // Handle PlayerJoined event
         if (payload.player_name && payload.game) {
             game.value = {
@@ -398,6 +410,14 @@ function handleModeUpdate(newMode: 'online' | 'bot') {
         timer_setting: 'off',
     });
 }
+
+function createNewGame() {
+    router.post('/game', {
+        player_name: myName.value ?? 'Player',
+        mode: 'online',
+        timer_setting: game.value.timer_setting,
+    });
+}
 </script>
 
 <template>
@@ -573,6 +593,24 @@ function handleModeUpdate(newMode: 'online' | 'bot') {
                     <Button variant="destructive" @click="confirmLeave"
                         >Leave Game</Button
                     >
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <!-- Player Left Modal -->
+        <Dialog :open="showPlayerLeft">
+            <DialogContent :hideClose="true">
+                <DialogHeader>
+                    <DialogTitle>Opponent Left</DialogTitle>
+                    <DialogDescription>
+                        {{ playerWhoLeft }} has left the game.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button variant="outline" @click="router.visit('/')">
+                        Back to Home
+                    </Button>
+                    <Button @click="createNewGame">Create New Game</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
