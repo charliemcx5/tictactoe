@@ -35,6 +35,11 @@ const nameError = ref('');
 
 function handleModeUpdate(value: GameMode) {
     mode.value = value;
+    
+    // Auto-create game when switching to bot mode
+    if (value === 'bot') {
+        handleCreateGame();
+    }
 }
 
 function handleCreateGame() {
