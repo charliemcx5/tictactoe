@@ -43,11 +43,11 @@ function handleModeUpdate(value: GameMode) {
 }
 
 function handleCreateGame() {
-    // If user is logged in, create game directly
-    if (user?.name) {
+    // If user is logged in or bot mode, create game directly
+    if (user?.name || mode.value === 'bot') {
         createGame();
     } else {
-        // Show name modal
+        // Show name modal for online games only
         pendingAction.value = 'create';
         nameInput.value = '';
         nameError.value = '';

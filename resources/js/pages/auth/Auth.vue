@@ -10,7 +10,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { store as loginStore } from '@/routes/login';
 import { request } from '@/routes/password';
 import { store as registerStore } from '@/routes/register';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, Link } from '@inertiajs/vue3';
 import { ArrowRight, User } from 'lucide-vue-next';
 
 defineProps<{
@@ -27,10 +27,10 @@ defineProps<{
         <div class="w-full max-w-4xl">
             <!-- Logo -->
             <div class="mb-8 flex justify-center">
-                <div class="flex items-center gap-2">
+                <Link href="/" class="flex items-center gap-2">
                     <TicTacToeLogo class="size-8 text-yellow-500" />
                     <span class="text-2xl font-medium">tictactoe</span>
-                </div>
+                </Link>
             </div>
 
             <!-- Main Card Container -->
